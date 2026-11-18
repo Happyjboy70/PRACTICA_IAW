@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  apache:
+    build: ./apache
+    container_name: nimbus-apache
+    volumes:
+      - ./apache/conf:/usr/local/apache2/conf/extra
+      - ./apache/html/alpha:/var/www/alpha-docs
+      - ./apache/html/beta:/var/www/beta-docs
+      - ./apache/html/default:/var/www/html/default
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    container_name: nimbus-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - apache
+    restart: unless-stopped
